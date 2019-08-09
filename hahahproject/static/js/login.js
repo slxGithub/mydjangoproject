@@ -45,7 +45,7 @@ function zy_Countdown(){
 function refresh_captcha(event){
     $.get("/captcha/refresh/?"+Math.random(), function(result){
         $('#'+event.data.form_id+' .captcha').attr("src",result.image_url);
-        $('#'+event.data.form_id+' .form-control-captcha[type="hidden"]').attr("value",result.key);
+        $('#id_captcha_0').attr("value",result.key);
     });
     return false;
 }
@@ -80,7 +80,7 @@ function login_form_submit(){
         cache: false,
         type: 'post',
         dataType:'json',
-        url:"/login/",
+        url:"/user/login/",
         data:$('#jsLoginForm').serialize() + '&autologin='+autoLogin + '&' + arg[0] + '=' + arg[1],
         async: true,
         beforeSend:function(XMLHttpRequest){
@@ -182,6 +182,66 @@ function find_password_form_submit(){
     });
 }
 
+
+//注册账号表单提交
+function register_form_submit(){
+ var $EmailRegBtn = $("#jsEmailRegBtn"),
+     $idEmail = $("#id_email");
+     verify = verifyDialogSubmit(
+        [
+            {id: '#id_email', tips: Dml.Msg.epUserName, errorTips: Dml.Msg.erUserName, regName: 'phMail', require: true},
+            {id: '#email-register-captcha_1', tips: Dml.Msg.epVerifyCode, errorTips: Dml.Msg.erVerifyCode, regName: 'verifyCode', require: true}
+        ]
+    );
+    if(!verify){
+       return;
+    }
+
+    $.ajax({
+        cache: false,
+        type: 'post',
+        dataType:'json',
+        url:"/register/",
+        data:$('#jsEmailRegBtn').serialize(),
+        async: true,
+        beforeSend:function(XMLHttpRequest){
+            $EmailRegBtn.val("提交中...")
+            $EmailRegBtn.attr("disabled","disabled")
+        },
+        success: function(data) {
+             refresh_captcha({"data":{"form_id":"jsEmailRegBtn"}});
+            if(data.account){
+                Dml.fun.showValidateError($idEmail,data.account);
+            }else if(data.captcha_1){
+                 Dml.fun.showValidateError($('#email-register-captcha_1'),data.captcha_1);
+            }else{
+                if($idEmail.val().indexOf("@") > 0 ) {
+                    Dml.fun.showTipsDialog({
+                        title: '提交成功',
+                        h2: '我们已经向你的邮箱' + $idEmail.val() + '发送了邮件，请通过邮件中的链接激活账号。'
+                    });
+                    $('#email_register_form')[0].reset();
+                    setTimeout(function () {
+                        window.location.href = window.location.href;
+                    }, 1500);
+                }
+                // }else{
+                //     if(data.status == 'success'){
+                //         $('#jsForgetTips').html("手机短信验证码已发送，请查收！").show();
+                //         $('#jsInpResetMobil').val($idAccount.val());
+                //         setTimeout(function(){Dml.fun.showDialog('#jsSetNewPwd')},1500);
+                //     }else if(data.status == 'failure'){
+                //         $('#jsForgetTips').html("手机短信验证码发送失败！").show();
+                //     }
+                // }
+            }
+        },
+        complete: function(XMLHttpRequest){
+            $findPwdBtn.val("提交");
+            $findPwdBtn.removeAttr("disabled");
+        }
+    });
+}
 
 
 $('#jsSetNewPwdBtn').on('click', function(){

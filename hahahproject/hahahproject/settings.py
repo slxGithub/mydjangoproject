@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'operation',
     'xadmin',
     'crispy_forms',
+    'captcha',
 ]
 
 MIDDLEWARE = [
@@ -142,3 +143,13 @@ AUTH_USER_MODEL = 'users.UserProfile'
 AUTHENTICATION_BACKENDS = (
     'users.views.CustomBackend',
 )
+
+
+
+# 邮箱配置
+EMAIL_HOST = "smtp.qq.com"  # SMTP服务器主机
+EMAIL_PORT = 25             # 端口
+EMAIL_HOST_USER = "3186087995@qq.com"       # 邮箱地址
+EMAIL_HOST_PASSWORD = "feqklnhvbakcdcib"    # 密码
+EMAIL_USE_TLS= True
+EMAIL_FROM = "3186087995@qq.com"            # 邮箱地址

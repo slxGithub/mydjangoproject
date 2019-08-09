@@ -27,3 +27,4 @@ from . import views
 #     path('<int:book_id>/', views.detail),
 #     # path('blog/<int:book_id>/', views.detail),
 # ]
+app_name = 'users'
